@@ -1,47 +1,35 @@
-import { BadRequestError } from "@/helpers/api-errors";
 import { model } from "mongoose";
-import UserSchema, { IUserSchema } from "@/schemas/UserSchema";
+import { UserSchema, IUserSchema } from "@/schemas/UserSchema";
 
 class UserService {
   private UserModel = model("users", UserSchema);
 
-  async create(user: IUserSchema): Promise<IUserSchema> {
+  async save(user: IUserSchema): Promise<IUserSchema> {
     const userModelInstance = new this.UserModel(user);
 
-    return await userModelInstance.save();
+    return (await userModelInstance.save()).toObject();
   }
 
-  async findAll(): Promise<IUserSchema[]> {
-    return await this.UserModel.find();
+  // async find(): Promise<IUserSchema[]> {
+  //   return await this.UserModel.find({}, "-password");
+  // }
+
+  // async findOneById(_id: string): Promise<IUserSchema | null> {
+  //   return await this.UserModel.findOne({ _id }, "-password");
+  // }
+
+  async findOneByEmail(email: string): Promise<IUserSchema | null> {
+    return await this.UserModel.findOne({ email });
   }
 
-  async findOne(id: string): Promise<IUserSchema> {
-    const user = await this.UserModel.findOne({ _id: id });
+  // async update(_id: string, user: IUserSchema): Promise<IUserSchema | null> {
+  //   const userUpdated = await this.UserModel.findByIdAndUpdate({ _id }, user);
+  //   return userUpdated ? userUpdated.toObject() : null;
+  // }
 
-    if (!user) {
-      throw new BadRequestError("User not found");
-    }
-
-    return user;
-  }
-
-  async update(id: string, user: IUserSchema): Promise<IUserSchema> {
-    const updatedUser = await this.UserModel.findByIdAndUpdate(id, user);
-    if (!updatedUser) {
-      throw new BadRequestError("User not found");
-    }
-
-    return updatedUser;
-  }
-
-  async delete(id: string): Promise<IUserSchema> {
-    const deletedUser = await this.UserModel.findByIdAndDelete(id);
-    if (!deletedUser) {
-      throw new BadRequestError("User not found");
-    }
-
-    return deletedUser;
-  }
+  // async delete(_id: string): Promise<IUserSchema | null> {
+  //   return await this.UserModel.findByIdAndDelete({ _id });
+  // }
 }
 
 export default new UserService();
