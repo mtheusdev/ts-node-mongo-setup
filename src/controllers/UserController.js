@@ -1,17 +1,21 @@
-import { Request, Response } from "express";
-import UserService from "@/services/UserService";
-import { BadRequestError } from "@/helpers/api-errors";
-import { encryptPassword, comparePassword } from "@/helpers/user";
-import {
-  validateFields,
-  IFieldProps,
-  generateV1UUID,
-  generateToken,
-} from "@/helpers/user";
+const UserService = require("../services/UserService");
+const { BadRequestError } = require("../helpers/api-errors");
+const { encryptPassword, comparePassword } = require("../helpers/user");
+const { validateFields, generateV1UUID } = require("../helpers/user");
+const { generateToken } = require("../helpers/auth");
+
+const uuid = require("uuid");
 
 class UserController {
-  async createUser(req: Request, res: Response) {
-    const fields: IFieldProps[] = [];
+  async hello(req, res) {
+    res.status(200).json({
+      message: "Hello World",
+      uuid: uuid.v1(),
+    });
+  }
+
+  async createUser(req, res) {
+    const fields = [];
     const body = req.body;
 
     Object.keys(body).forEach((key) => {
@@ -24,6 +28,7 @@ class UserController {
 
     validateFields({ fieldArgs: fields });
 
+    // eslint-disable-next-line no-unused-vars
     const { password: _, ...user } = await UserService.save({
       ...body,
       id: generateV1UUID(),
@@ -41,7 +46,7 @@ class UserController {
     });
   }
 
-  // async getUsers(req: Request, res: Response) {
+  // async getUsers(req, res) {
   //   const users = await UserService.find();
 
   //   res.status(200).json({
@@ -50,7 +55,7 @@ class UserController {
   //   });
   // }
 
-  // async getUser(req: Request, res: Response) {
+  // async getUser(req, res) {
   //   const { id } = req.params;
   //   const response = await UserService.findOneById(id);
 
@@ -60,11 +65,11 @@ class UserController {
 
   //   res.status(200).json({
   //     message: "User found successfully",
-  //     data: { user: response },
+  //     data: { user },
   //   });
   // }
 
-  // async updateUser(req: Request, res: Response) {
+  // async updateUser(req, res) {
   //   const { name, email, password, _id } = req.body;
 
   //   const response = await UserService.update(_id, {
@@ -85,7 +90,7 @@ class UserController {
   //   });
   // }
 
-  // async deleteUser(req: Request, res: Response) {
+  // async deleteUser(req, res) {
   //   const { id } = req.params;
   //   const response = await UserService.delete(id);
 
@@ -95,29 +100,38 @@ class UserController {
 
   //   res.status(200).json({
   //     message: "User deleted successfully",
-  //     data: { user: response },
+  //     data: { user },
   //   });
   // }
 
-  // async loginUser(req: Request, res: Response) {
-  //   const { email, password } = req.body;
+  async loginUser(req, res) {
+    const { email, password } = req.body;
 
-  //   const user = await UserService.findOneByEmail(email);
+    const user = await UserService.findOneByEmail(email);
 
-  //   if (!user) {
-  //     throw new BadRequestError("Invalid email or password");
-  //   }
+    if (!user) {
+      throw new BadRequestError("Invalid email or password");
+    }
 
-  //   const verifyPassword = await comparePassword(password, user.password);
+    const verifyPassword = await comparePassword(password, user.password);
 
-  //   if (!verifyPassword) {
-  //     throw new BadRequestError("Invalid email or password");
-  //   }
+    if (!verifyPassword) {
+      throw new BadRequestError("Invalid email or password");
+    }
 
-  //   const token = generateToken(user.id);
+    const token = generateToken(user.id);
 
-  //   res.send(token);
-  // }
+    // eslint-disable-next-line no-unused-vars
+    const { password: _, ...userWithoutPassword } = user;
+
+    res.status(200).json({
+      message: "User logged in",
+      data: {
+        user: userWithoutPassword,
+        token,
+      },
+    });
+  }
 }
 
-export default new UserController();
+module.exports = new UserController();

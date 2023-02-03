@@ -1,40 +1,26 @@
 import { Schema } from "mongoose";
 
-export enum eStatus {
-  INACTIVE = 0,
-  ACTIVE = 1,
-  PENDING = 2,
-  FAILED = 3,
-  BLOCKED = 4,
-}
+const eStatus = {
+  INACTIVE: 0,
+  ACTIVE: 1,
+  PENDING: 2,
+  FAILED: 3,
+  BLOCKED: 4,
+};
 
-export enum eCountry {
-  BRAZIL = 0,
-  USA = 1,
-  SPAIN = 2,
-}
+const eCountry = {
+  BRAZIL: 0,
+  USA: 1,
+  SPAIN: 2,
+};
 
-export enum eLanguage {
-  PORTUGUESE = 0,
-  ENGLISH = 1,
-  SPANISH = 2,
-}
+const eLanguage = {
+  PORTUGUESE: 0,
+  ENGLISH: 1,
+  SPANISH: 2,
+};
 
-export interface IUserSchema {
-  id: string;
-  email: string;
-  password: string;
-  name: string;
-  cellphone: string;
-  country: eCountry;
-  language: eLanguage;
-  document: string;
-  profile_id: string;
-  status: eStatus;
-  filename: string;
-}
-
-export const UserSchema = new Schema(
+const UserSchema = new Schema(
   {
     id: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
@@ -55,3 +41,10 @@ export const UserSchema = new Schema(
     },
   }
 );
+
+module.exports = {
+  UserSchema,
+  eStatus,
+  eLanguage,
+  eCountry,
+};

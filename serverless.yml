@@ -1,0 +1,27 @@
+service: lockschool-teste
+
+useDotenv: true
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  memorySize: 512
+  timeout: 15
+  stage: dev
+  region: us-east-1
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - http:
+          path: /
+          method: GET
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+plugins:
+  - serverless-offline

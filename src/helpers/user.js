@@ -1,56 +1,37 @@
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import * as uuid from "uuid";
-import uuidToHex from "uuid-to-hex";
-import hexToUuid from "hex-to-uuid";
-import { BadRequestError } from "./api-errors";
-import { UserSchema } from "../schemas/UserSchema";
-import { eStatus, eCountry, eLanguage } from "../schemas/UserSchema";
-import { cpf, cnpj } from "cpf-cnpj-validator";
+const bcrypt = require("bcrypt");
+const uuid = require("uuid");
+const uuidToHex = require("uuid-to-hex");
+const hexToUuid = require("hex-to-uuid");
+const { BadRequestError } = require("./api-errors");
+const { UserSchema } = require("../schemas/UserSchema");
+const { eStatus, eCountry, eLanguage } = require("../schemas/UserSchema");
+const cpf = require("cpf-cnpj-validator").cpf;
+const cnpj = require("cpf-cnpj-validator").cnpj;
 
-export interface IFieldProps {
-  name: string;
-  value: string;
-  country: number;
-}
-
-export interface IValidateFields {
-  fieldArgs: IFieldProps[];
-}
-
-export const encryptPassword = async (password: string): Promise<string> => {
+const encryptPassword = async (password) => {
   return await bcrypt.hash(password, 10);
 };
 
-export const comparePassword = async (
-  password: string,
-  hashPassword: string
-): Promise<boolean> => {
+const comparePassword = async (password, hashPassword) => {
   return await bcrypt.compare(password, hashPassword);
 };
 
-export const generateToken = (id: string): string => {
-  return jwt.sign({ id }, process.env.JWT_SECRET as string, {
-    expiresIn: 86400,
-  });
-};
-
-export const generateV1UUID = (): string => {
+const generateV1UUID = () => {
   return uuidToHex(uuid.v1());
 };
 
-const validateEmail = (email: string): boolean => {
+const validateEmail = (email) => {
   const regex = /\S+@\S+\.\S+/;
   return regex.test(email);
 };
 
-const validatePassword = (password: string): boolean => {
+const validatePassword = (password) => {
   const regex =
     /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/;
   return regex.test(password);
 };
 
-const validateName = (name: string): boolean => {
+const validateName = (name) => {
   if (name.length > 2) {
     return true;
   } else {
@@ -58,17 +39,17 @@ const validateName = (name: string): boolean => {
   }
 };
 
-const validateUSPhone = (cellphone: string): boolean => {
+const validateUSPhone = (cellphone) => {
   const regex = /^\(?([0-9]{3})\)?[-. ]?([0-9]{3})[-. ]?([0-9]{4})$/;
   return regex.test(cellphone);
 };
 
-const validateBRPhone = (cellphone: string): boolean => {
+const validateBRPhone = (cellphone) => {
   const regex = /^[1-9]{2}?[0-9]{2}?[9]?[0-9]{4}[-]?[0-9]{4}$/;
   return regex.test(cellphone);
 };
 
-const validateCountry = (country: eCountry): boolean => {
+const validateCountry = (country) => {
   if (
     country === eCountry.BRAZIL ||
     country === eCountry.USA ||
@@ -80,7 +61,7 @@ const validateCountry = (country: eCountry): boolean => {
   }
 };
 
-const validateLanguage = (language: eLanguage): boolean => {
+const validateLanguage = (language) => {
   if (
     language === eLanguage.PORTUGUESE ||
     language === eLanguage.ENGLISH ||
@@ -92,7 +73,7 @@ const validateLanguage = (language: eLanguage): boolean => {
   }
 };
 
-const validateBRDocument = (document: string): boolean => {
+const validateBRDocument = (document) => {
   if (document.length === 11) {
     return cpf.isValid(document);
   } else if (document.length === 14) {
@@ -102,12 +83,12 @@ const validateBRDocument = (document: string): boolean => {
   }
 };
 
-const validateUSDocument = (document: string): boolean => {
+const validateUSDocument = (document) => {
   const regex = /^\d{3}-\d{2}-\d{4}$/;
   return regex.test(document);
 };
 
-const validateProfileId = (profileId: string): boolean => {
+const validateProfileId = (profileId) => {
   try {
     if (uuid.validate(hexToUuid(profileId))) {
       return true;
@@ -119,7 +100,7 @@ const validateProfileId = (profileId: string): boolean => {
   }
 };
 
-const validateStatus = (status: eStatus): boolean => {
+const validateStatus = (status) => {
   if (
     status === eStatus.ACTIVE ||
     status === eStatus.INACTIVE ||
@@ -133,11 +114,7 @@ const validateStatus = (status: eStatus): boolean => {
   }
 };
 
-const validateField = (
-  fieldName: string,
-  value: string,
-  country: number
-): void => {
+const validateField = (fieldName, value, country) => {
   switch (fieldName) {
     case "country":
       if (!validateCountry(Number(value))) {
@@ -207,7 +184,7 @@ const validateField = (
   }
 };
 
-const requiredFieldsValidation = (fields: IValidateFields): void => {
+const requiredFieldsValidation = (fields) => {
   const requiredUserFields = UserSchema.requiredPaths().filter(
     (field) => field !== "id"
   );
@@ -233,10 +210,17 @@ const requiredFieldsValidation = (fields: IValidateFields): void => {
   });
 };
 
-export const validateFields = (fields: IValidateFields): void => {
+const validateFields = (fields) => {
   requiredFieldsValidation(fields);
 
   fields.fieldArgs.forEach((field) => {
     validateField(field.name, field.value, field.country);
   });
+};
+
+module.exports = {
+  validateFields,
+  encryptPassword,
+  comparePassword,
+  generateV1UUID,
 };
