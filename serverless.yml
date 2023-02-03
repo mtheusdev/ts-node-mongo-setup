@@ -1,4 +1,4 @@
-service: lookschool
+service: lookschool-backend
 
 useDotenv: true
 
@@ -7,21 +7,20 @@ provider:
   runtime: nodejs16.x
   memorySize: 512
   timeout: 15
-  stage: dev
   region: us-east-1
+  apiName: lookscholl-api
 
 functions:
   api:
+    name: lookschool-backend
     handler: lambda.handler
     events:
-      - http:
+      - httpApi:
           path: /
           method: GET
-          cors: true
-      - http:
+      - httpApi:
           path: /{proxy+}
           method: ANY
-          cors: true
 
 plugins:
   - serverless-offline

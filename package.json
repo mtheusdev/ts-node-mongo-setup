@@ -1,5 +1,5 @@
 {
-  "name": "ts-node-project-setup",
+  "name": "loockschool-backend",
   "version": "1.0.0",
   "description": "Loockschool backend NodeJS api",
   "main": "app.js",
