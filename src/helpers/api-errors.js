@@ -1,4 +1,4 @@
-export class ApiError extends Error {
+class ApiError extends Error {
   statusCode;
 
   constructor(message, statusCode) {
@@ -7,20 +7,27 @@ export class ApiError extends Error {
   }
 }
 
-export class BadRequestError extends ApiError {
+class BadRequestError extends ApiError {
   constructor(message) {
     super(message, 400);
   }
 }
 
-export class NotFoundError extends ApiError {
+class NotFoundError extends ApiError {
   constructor(message) {
     super(message, 404);
   }
 }
 
-export class UnauthorizedError extends ApiError {
+class UnauthorizedError extends ApiError {
   constructor(message) {
     super(message, 401);
   }
 }
+
+module.exports = {
+  ApiError,
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+};

@@ -1,12 +1,24 @@
-const bcrypt = require("bcrypt");
 const uuid = require("uuid");
+const bcrypt = require("bcryptjs");
 const uuidToHex = require("uuid-to-hex");
 const hexToUuid = require("hex-to-uuid");
 const { BadRequestError } = require("./api-errors");
 const { UserSchema } = require("../schemas/UserSchema");
-const { eStatus, eCountry, eLanguage } = require("../schemas/UserSchema");
 const cpf = require("cpf-cnpj-validator").cpf;
 const cnpj = require("cpf-cnpj-validator").cnpj;
+const {
+  STATUS_INACTIVE,
+  STATUS_ACTIVE,
+  STATUS_PENDING,
+  STATUS_FAILED,
+  STATUS_BLOCKED,
+  COUNTRY_BRAZIL,
+  COUNTRY_USA,
+  COUNTRY_SPAIN,
+  LANGUAGE_PORTUGUESE,
+  LANGUAGE_ENGLISH,
+  LANGUAGE_SPANISH,
+} = require("../constants/UserConstants");
 
 const encryptPassword = async (password) => {
   return await bcrypt.hash(password, 10);
@@ -51,9 +63,9 @@ const validateBRPhone = (cellphone) => {
 
 const validateCountry = (country) => {
   if (
-    country === eCountry.BRAZIL ||
-    country === eCountry.USA ||
-    country === eCountry.SPAIN
+    country === COUNTRY_BRAZIL ||
+    country === COUNTRY_USA ||
+    country === COUNTRY_SPAIN
   ) {
     return true;
   } else {
@@ -63,9 +75,9 @@ const validateCountry = (country) => {
 
 const validateLanguage = (language) => {
   if (
-    language === eLanguage.PORTUGUESE ||
-    language === eLanguage.ENGLISH ||
-    language === eLanguage.SPANISH
+    language === LANGUAGE_PORTUGUESE ||
+    language === LANGUAGE_ENGLISH ||
+    language === LANGUAGE_SPANISH
   ) {
     return true;
   } else {
@@ -102,11 +114,11 @@ const validateProfileId = (profileId) => {
 
 const validateStatus = (status) => {
   if (
-    status === eStatus.ACTIVE ||
-    status === eStatus.INACTIVE ||
-    status === eStatus.PENDING ||
-    status === eStatus.FAILED ||
-    status === eStatus.BLOCKED
+    status === STATUS_INACTIVE ||
+    status === STATUS_ACTIVE ||
+    status === STATUS_PENDING ||
+    status === STATUS_FAILED ||
+    status === STATUS_BLOCKED
   ) {
     return true;
   } else {
@@ -145,11 +157,11 @@ const validateField = (fieldName, value, country) => {
       break;
 
     case "cellphone":
-      if (country === eCountry.BRAZIL && !validateBRPhone(value)) {
+      if (country === COUNTRY_BRAZIL && !validateBRPhone(value)) {
         throw new BadRequestError(
           `${fieldName} must be a valid BR cellphone number`
         );
-      } else if (country === eCountry.USA && !validateUSPhone(value)) {
+      } else if (country === COUNTRY_USA && !validateUSPhone(value)) {
         throw new BadRequestError(
           `${fieldName} must be a valid US cellphone number`
         );
@@ -157,9 +169,9 @@ const validateField = (fieldName, value, country) => {
       break;
 
     case "document":
-      if (country === 0 && !validateBRDocument(value)) {
+      if (country === COUNTRY_BRAZIL && !validateBRDocument(value)) {
         throw new BadRequestError(`${fieldName} must be a valid BR document`);
-      } else if (country === 1 && !validateUSDocument(value)) {
+      } else if (country === COUNTRY_USA && !validateUSDocument(value)) {
         throw new BadRequestError(`${fieldName} must be a valid US document`);
       }
       break;

@@ -1,4 +1,4 @@
-service: lockschool-teste
+service: lookschool
 
 useDotenv: true
 

@@ -3,14 +3,10 @@ const { BadRequestError } = require("../helpers/api-errors");
 const { encryptPassword, comparePassword } = require("../helpers/user");
 const { validateFields, generateV1UUID } = require("../helpers/user");
 const { generateToken } = require("../helpers/auth");
-
-const uuid = require("uuid");
-
 class UserController {
-  async hello(req, res) {
+  async test(req, res) {
     res.status(200).json({
-      message: "Hello World",
-      uuid: uuid.v1(),
+      message: "Teste USER",
     });
   }
 

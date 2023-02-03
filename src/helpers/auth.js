@@ -2,7 +2,7 @@ const jwt = require("jsonwebtoken");
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET ?? "", {
-    expiresIn: process.env.NODE_ENV === "production" ? "8h" : "3d",
+    expiresIn: "8h",
   });
 };
 

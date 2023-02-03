@@ -1,38 +1,32 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-// const { UnauthorizedError, ApiError } = require("../helpers/api-errors");
-// const { verifyToken } = require("../helpers/auth");
-// const UserService = require("../services/UserService");
+const { UnauthorizedError } = require("../helpers/api-errors");
+const { verifyToken } = require("../helpers/auth");
+const UserService = require("../services/UserService");
 
-const middlewareError = (error, _req, res, _next) => {
+// eslint-disable-next-line no-unused-vars
+const errorMiddleware = (error, _req, res, _next) => {
   const statusCode = error.statusCode ?? 500;
   const message = error.statusCode ? error.message : "Internal Server Error";
   res.status(statusCode).send({ message });
 };
 
-// export const authMiddleware = async (
-//   req: Request,
-//   _res: Response,
-//   next: NextFunction
-// ) => {
-//   const { authorization } = req.headers;
+const authMiddleware = async (req, _res, next) => {
+  const { authorization } = req.headers;
 
-//   if (!authorization) {
-//     throw new UnauthorizedError("Unauthorized");
-//   }
+  if (!authorization) {
+    throw new UnauthorizedError("Unauthorized");
+  }
 
-//   const { id } = verifyToken(authorization.split(" ")[1]) as IJwtPayload;
-//   const user = await UserService.findOneById(id);
+  const { id } = verifyToken(authorization.split(" ")[1]);
+  const user = await UserService.findOneById(id);
 
-//   if (!user) {
-//     throw new UnauthorizedError("Unauthorized");
-//   }
+  if (!user) {
+    throw new UnauthorizedError("Unauthorized");
+  }
 
-//   req.user = user;
-
-//   next();
-// };
+  next();
+};
 
 module.exports = {
-  middlewareError,
-  // authMiddleware,
+  errorMiddleware,
+  authMiddleware,
 };

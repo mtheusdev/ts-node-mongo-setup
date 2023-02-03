@@ -1,0 +1,30 @@
+dynamoDB => update somente se tiver atualização do "document" e/ou "name", mas, somente se não houver atualização de foto
+
+SQS -> Fila
+
+SQS => json {
+  obj: "delete" ou "update" ou "create",
+  spot_id: "id do spot",
+  person_id: "id da pessoa",
+  user_id: "id do usuário",
+  filename: "nome do arquivo",
+}
+
+se obj === delete => adicionar embedding_id no json
+se obj === create => adicionar name, document no json
+se obj === update => adicionar embedding_id, name, document no json
+
+caso delete =>  status: delete (Nao excluir) no mongo e push SQS do json
+
+obs: conversar com o junior para definir flag (pendente cadastro, pendente update, delete ...)
+
+create  =>  salvar metadata no mongo, adicionar foto no s3 e push SQS do json
+update =>  salvar metadata no mongo, sobrescrever foto no s3 e push SQS do json
+
+Person -> ID = {person_id}.jpg
+
+path do file do person spot_id/img_base/person_id.jpg (no nivel do rasp...)
+path do user 
+
+
+SQS, S3 => US

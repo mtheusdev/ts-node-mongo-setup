@@ -1,24 +1,4 @@
-import { Schema } from "mongoose";
-
-const eStatus = {
-  INACTIVE: 0,
-  ACTIVE: 1,
-  PENDING: 2,
-  FAILED: 3,
-  BLOCKED: 4,
-};
-
-const eCountry = {
-  BRAZIL: 0,
-  USA: 1,
-  SPAIN: 2,
-};
-
-const eLanguage = {
-  PORTUGUESE: 0,
-  ENGLISH: 1,
-  SPANISH: 2,
-};
+const { Schema } = require("mongoose");
 
 const UserSchema = new Schema(
   {
@@ -42,9 +22,4 @@ const UserSchema = new Schema(
   }
 );
 
-module.exports = {
-  UserSchema,
-  eStatus,
-  eLanguage,
-  eCountry,
-};
+module.exports = { UserSchema };
